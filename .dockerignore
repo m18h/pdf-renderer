@@ -1,0 +1,13 @@
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+.vscode/*
+/vendor/
+/Godeps/
+debug
+__debug_bin
