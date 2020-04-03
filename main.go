@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Request
-type RenderRequest struct {
+// request object
+type renderRequest struct {
 	HTMLBody     string
 	DPI          uint
 	PageSize     string
@@ -35,7 +35,7 @@ func main() {
 	})
 
 	r.POST("/api/render_html", func(c *gin.Context) {
-		data := &RenderRequest{}
+		data := &renderRequest{}
 		c.Bind(data)
 
 		pdf, err := renderHTML(data)
@@ -57,10 +57,11 @@ func main() {
 		}
 	})
 
-	r.Run(":80") // listen and serve on 0.0.0.0:80
+	// listen and serve on 0.0.0.0:80
+	r.Run(":80")
 }
 
-func renderHTML(data *RenderRequest) ([]byte, error) {
+func renderHTML(data *renderRequest) ([]byte, error) {
 	pdfg := wkhtmltopdf.NewPDFPreparer()
 	pdfg.AddPage(wkhtmltopdf.NewPageReader(strings.NewReader(data.HTMLBody)))
 	if data.DPI != 0 {
@@ -81,15 +82,13 @@ func renderHTML(data *RenderRequest) ([]byte, error) {
 	pdfg.MarginLeft.Set(data.MarginLeft)
 	pdfg.MarginRight.Set(data.MarginRight)
 
-	// The html string is also saved as base64 string in the JSON file
+	// convert html to json string
 	jsonBytes, err := pdfg.ToJSON()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// The JSON can be saved, uploaded, etc.
-
-	// Server code, create a new PDF generator from JSON, also looks for the wkhtmltopdf executable
+	// use wkhtmltopdf tp create pdf
 	pdfgFromJSON, err := wkhtmltopdf.NewPDFGeneratorFromJSON(bytes.NewReader(jsonBytes))
 	if err != nil {
 		log.Fatal(err)
