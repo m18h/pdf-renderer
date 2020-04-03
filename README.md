@@ -2,16 +2,6 @@
 
 A micro-service for generating PDF documents
 
-## Requirements
-
-- Go v1.14+
-
-## Dev
-
-```
-dep init
-```
-
 ## How To Use
 
 ### Request Object
@@ -42,6 +32,18 @@ dep init
 ### Response Object
 ```json
 {
-    "data": <string>
+    "data": <byte-array>
 }
+```
+
+## Development
+
+### Requirements
+
+- Go v1.14+
+
+### Install dependencies
+
+```
+dep ensure
 ```
