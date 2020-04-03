@@ -20,14 +20,16 @@ A micro-service for generating PDF documents
 
 #### Request Options
 
-1. PageSize 
-```
-
-```
-2. Orientation
-```
-
-```
+Value | Default 
+--- | ---
+HtmlBody | -
+DPI | `96`
+PageSize | `A4`
+Orientation | `Portrait`
+MarginTop | -
+MarginBottom | `10mm`
+MarginLeft | `10mm`
+MarginRight | -
 
 ### Response Object
 ```json
