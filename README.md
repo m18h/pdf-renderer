@@ -2,36 +2,40 @@
 
 A micro-service for generating PDF documents
 
-## How To Use
+## Endpoints
 
-### Request Object
+### Render HTML
+
+`/api/render_html`
+
+#### Request
 ```json
 {
-    "HtmlBody": <string>,
-    "DPI": <int>,
-    "PageSize": <string>,
-    "Orientation": <string>,
-    "MarginTop": <int>,
-    "MarginBottom": <int>,
-    "MarginLeft": <int>,
-    "MarginRight": <int>
+    "htmlBody": <string>,
+    "dpi": <int>,
+    "pageSize": <string>,
+    "orientation": <string>,
+    "marginTop": <int>,
+    "marginBottom": <int>,
+    "marginLeft": <int>,
+    "marginRight": <int>
 }
 ```
 
-#### Request Options
+Options
 
 Value | Default 
 --- | ---
-HtmlBody | -
-DPI | `96`
-PageSize | `A4`
-Orientation | `Portrait`
-MarginTop | -
-MarginBottom | `10mm`
-MarginLeft | `10mm`
-MarginRight | -
+htmlBody | -
+dpi | `96`
+pageSize | `A4`
+orientation | `Portrait`
+marginTop | -
+marginBottom | `10mm`
+marginLeft | `10mm`
+marginRight | -
 
-### Response Object
+#### Response
 ```json
 {
     "data": <byte-array>
