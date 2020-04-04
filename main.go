@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
@@ -11,15 +12,15 @@ import (
 )
 
 // request object
-type renderRequest struct {
-	HTMLBody     string
-	DPI          uint
-	PageSize     string
-	Orientation  string
-	MarginTop    uint
-	MarginBottom uint
-	MarginLeft   uint
-	MarginRight  uint
+type htmlRequest struct {
+	HTMLBody     string `json:"htmlBody" validate:"required"`
+	PageSize     string `json:"pageSize"`
+	Orientation  string `json:"orientation"`
+	DPI          uint   `json:"dpi"`
+	MarginTop    uint   `json:"marginTop"`
+	MarginBottom uint   `json:"marginBottom"`
+	MarginLeft   uint   `json:"marginLeft"`
+	MarginRight  uint   `json:"marginRight"`
 }
 
 func main() {
@@ -35,8 +36,19 @@ func main() {
 	})
 
 	r.POST("/api/render_html", func(c *gin.Context) {
-		data := &renderRequest{}
-		c.Bind(data)
+		data := &htmlRequest{}
+
+		err := c.BindJSON(&data)
+		if err != nil {
+			log.Fatal(err)
+			c.JSON(
+				http.StatusBadRequest,
+				gin.H{
+					"error": err.Error(),
+				},
+			)
+			return
+		}
 
 		pdf, err := renderHTML(data)
 
@@ -58,10 +70,15 @@ func main() {
 	})
 
 	// listen and serve on 0.0.0.0:80
-	r.Run(":80")
+	port, exists := os.LookupEnv("PORT")
+	if exists {
+		r.Run(":" + port)
+	} else {
+		r.Run(":7900")
+	}
 }
 
-func renderHTML(data *renderRequest) ([]byte, error) {
+func renderHTML(data *htmlRequest) ([]byte, error) {
 	pdfg := wkhtmltopdf.NewPDFPreparer()
 	pdfg.AddPage(wkhtmltopdf.NewPageReader(strings.NewReader(data.HTMLBody)))
 	if data.DPI != 0 {

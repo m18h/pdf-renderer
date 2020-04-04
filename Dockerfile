@@ -16,6 +16,9 @@ FROM surnet/alpine-wkhtmltopdf:3.7-0.12.4-small
 
 LABEL Author="Michael K. Essandoh <mexcon.mike@gmail.com>"
 
+ENV GIN_MODE=release
+ENV PORT=80
+
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 RUN mkdir -p /pdf-renderer
