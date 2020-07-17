@@ -15,6 +15,8 @@ import (
 type htmlRequest struct {
 	HTMLBody     string `json:"htmlBody" validate:"required"`
 	PageSize     string `json:"pageSize"`
+	PageWidth    uint   `json:"pageWidth"`
+	PageHeight   uint   `json:"pageHeight"`
 	Orientation  string `json:"orientation"`
 	DPI          uint   `json:"dpi"`
 	MarginTop    uint   `json:"marginTop"`
@@ -84,15 +86,20 @@ func renderHTML(data *htmlRequest) ([]byte, error) {
 	if data.DPI != 0 {
 		pdfg.Dpi.Set(data.DPI)
 	}
-	if data.PageSize != "" {
-		pdfg.PageSize.Set(data.PageSize)
+	if data.PageWidth != 0 && data.PageHeight != 0 {
+		pdfg.PageWidth.Set(data.PageWidth)
+		pdfg.PageHeight.Set(data.PageHeight)
 	} else {
-		pdfg.PageSize.Set("A4")
-	}
-	if data.Orientation != "" {
-		pdfg.Orientation.Set(data.Orientation)
-	} else {
-		pdfg.Orientation.Set("Portrait")
+		if data.PageSize != "" {
+			pdfg.PageSize.Set(data.PageSize)
+		} else {
+			pdfg.PageSize.Set("A4")
+		}
+		if data.Orientation != "" {
+			pdfg.Orientation.Set(data.Orientation)
+		} else {
+			pdfg.Orientation.Set("Portrait")
+		}
 	}
 	pdfg.MarginTop.Set(data.MarginTop)
 	pdfg.MarginBottom.Set(data.MarginBottom)
