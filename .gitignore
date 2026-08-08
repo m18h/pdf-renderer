@@ -6,6 +6,12 @@
 *.test
 *.out
 
+# Build output
+/pdf-renderer
+
+# macOS
+.DS_Store
+
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

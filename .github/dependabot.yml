@@ -1,0 +1,22 @@
+version: 2
+updates:
+  # Go modules
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+
+  # GitHub Actions (keeps the pinned SHAs current)
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+
+  # Docker base images. This is the mechanism that actually matters: a new
+  # Chromium in chromedp/headless-shell opens a PR that runs the full suite,
+  # which a cron against a pinned tag never would.
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: daily

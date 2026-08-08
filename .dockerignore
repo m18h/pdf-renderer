@@ -1,3 +1,12 @@
+.git
+.github
+.gitignore
+.dockerignore
+.golangci.yml
+.vscode
+deploy
+testdata
+*.md
 *.exe
 *.exe~
 *.dll
@@ -5,8 +14,7 @@
 *.dylib
 *.test
 *.out
-
-.vscode/*
+*.pdf
 /vendor/
 /Godeps/
 debug
