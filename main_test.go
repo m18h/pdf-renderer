@@ -155,3 +155,32 @@ func TestLoadConfigEmptyValuesFallBackToDefaults(t *testing.T) {
 		t.Errorf("Port = %q, want the default 8080", c.Port)
 	}
 }
+
+func TestLoadConfigFontsDir(t *testing.T) {
+	// Default is the fontconfig-scanned mount point.
+	c, err := loadConfig(envLookup(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.FontsDir != "/usr/local/share/fonts" {
+		t.Errorf("FontsDir = %q, want /usr/local/share/fonts", c.FontsDir)
+	}
+
+	c, err = loadConfig(envLookup(map[string]string{"PDFRENDER_FONTS_DIR": "/opt/brand-fonts"}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.FontsDir != "/opt/brand-fonts" {
+		t.Errorf("FontsDir = %q, want /opt/brand-fonts", c.FontsDir)
+	}
+
+	// An explicit empty value opts out of the scan entirely, unlike the other
+	// settings where empty means "unset, use the default".
+	c, err = loadConfig(envLookup(map[string]string{"PDFRENDER_FONTS_DIR": ""}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.FontsDir != "" {
+		t.Errorf("FontsDir = %q, want empty to disable the font scan", c.FontsDir)
+	}
+}

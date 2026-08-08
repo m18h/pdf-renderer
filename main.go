@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/m18h/pdf-renderer/internal/browser"
+	"github.com/m18h/pdf-renderer/internal/fonts"
 	"github.com/m18h/pdf-renderer/internal/httpapi"
 	"github.com/m18h/pdf-renderer/internal/render"
 )
@@ -35,6 +36,7 @@ type config struct {
 	ReadyTimeout   time.Duration
 	MaxBodyBytes   int64
 	LogFormat      string
+	FontsDir       string
 }
 
 func main() {
@@ -76,6 +78,7 @@ func loadConfig(lookup func(string) (string, bool)) (config, error) {
 		ReadyTimeout:   render.DefaultReadyTimeout,
 		MaxBodyBytes:   httpapi.DefaultMaxBodyBytes,
 		LogFormat:      "json",
+		FontsDir:       fonts.DefaultDir,
 	}
 
 	if v, ok := lookup("PORT"); ok && v != "" {
@@ -88,6 +91,10 @@ func loadConfig(lookup func(string) (string, bool)) (config, error) {
 	}
 	if v, ok := lookup("PDFRENDER_EXEC_PATH"); ok && v != "" {
 		c.ExecPath = v
+	}
+	if v, ok := lookup("PDFRENDER_FONTS_DIR"); ok {
+		// An explicit empty value disables the extra-font scan entirely.
+		c.FontsDir = v
 	}
 	if v, ok := lookup("PDFRENDER_NO_SANDBOX"); ok {
 		c.NoSandbox = v == "1" || v == "true"
@@ -163,6 +170,18 @@ func run(cfg config) error {
 		logger.Warn("Chromium sandbox is DISABLED (PDFRENDER_NO_SANDBOX). " +
 			"This service renders untrusted HTML; prefer running with " +
 			"--security-opt seccomp=deploy/chrome-seccomp.json and the sandbox on.")
+	}
+
+	// Must happen before the browser launches: Chromium reads fontconfig once at
+	// startup and inherits this process's environment.
+	if cfg.FontsDir != "" {
+		// Prepare logs what it found; nothing here needs the counts.
+		if _, err := fonts.Prepare(context.Background(), fonts.Config{
+			Dir:    cfg.FontsDir,
+			Logger: logger,
+		}); err != nil {
+			return fmt.Errorf("prepare fonts: %w", err)
+		}
 	}
 
 	pool, err := browser.New(browser.Config{

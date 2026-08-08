@@ -179,6 +179,7 @@ exhausting it produces `BUS_ADRERR` crashes rather than graceful degradation.
 |---|---|---|
 | `PORT` | `8080` | Listen port |
 | `PDFRENDER_EXEC_PATH` | `/headless-shell/headless-shell` | Browser binary |
+| `PDFRENDER_FONTS_DIR` | `/usr/local/share/fonts` | Extra fonts mounted at runtime. Empty disables the scan. |
 | `PDFRENDER_NO_SANDBOX` | unset | `1` disables the Chromium sandbox |
 | `PDFRENDER_MAX_CONCURRENT` | CPU count | Simultaneous tabs |
 | `PDFRENDER_ACQUIRE_TIMEOUT` | `5s` | Wait for a free slot before 503 |
@@ -190,6 +191,56 @@ exhausting it produces `BUS_ADRERR` crashes rather than graceful degradation.
 | `PDFRENDER_LOG_FORMAT` | `json` | `json` or `text` |
 
 An invalid value is a startup failure, not a silent fallback.
+
+### Adding your own fonts
+
+The image bundles Liberation and Noto, which covers Latin, Cyrillic, Greek, CJK and emoji —
+but not brand or licensed faces. Mount a directory of font files and they are picked up at
+startup, no rebuild required:
+
+```bash
+docker run -d \
+  -p 8080:8080 --shm-size=1g \
+  --security-opt seccomp=deploy/chrome-seccomp.json \
+  -v /path/to/your/fonts:/usr/local/share/fonts:ro \
+  ghcr.io/m18h/pdf-renderer:latest
+```
+
+The service scans the directory (recursively), registers it with fontconfig and rebuilds
+the font cache before Chromium starts. It logs what it found:
+
+```json
+{"level":"INFO","msg":"loaded extra fonts","dir":"/usr/local/share/fonts","count":3}
+```
+
+Your documents then reference the faces by family name as usual — `font-family: "Your Brand
+Sans"`. Use `fc-list` inside the container to see the names fontconfig derived:
+
+```bash
+docker exec <container> fc-list : family | sort -u
+```
+
+Notes:
+
+- **`/usr/local/share/fonts` is the zero-config path** — fontconfig already scans it. Any
+  other location works too, via `PDFRENDER_FONTS_DIR`; the service then generates a
+  fontconfig file and points `FONTCONFIG_FILE` at it.
+- **Only formats fontconfig can load**: `.ttf`, `.ttc`, `.otf`, `.otc`, `.pfa`, `.pfb`,
+  `.pcf`, `.bdf`, `.dfont`. **`.woff` and `.woff2` are ignored** — fontconfig cannot read
+  them. Mounting web fonts is a silent no-op, so the service warns when it sees them.
+  Convert them to `.ttf`/`.otf` first.
+- A missing or empty directory is fine and is not an error, so the same run command works
+  whether or not anything is mounted.
+- Mounting read-only (`:ro`) is fine; the font cache is written under `$XDG_CACHE_HOME`.
+- `@font-face` with a URL your document can reach still works and needs none of this. Use
+  mounted fonts when the same faces are needed across many documents.
+
+Verify the whole path end to end — it builds a deliberately CJK-less image and checks that
+a mounted CJK font is genuinely embedded in the output:
+
+```bash
+./deploy/smoke-fonts.sh
+```
 
 ### Sizing
 

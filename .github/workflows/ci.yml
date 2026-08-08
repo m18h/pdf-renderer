@@ -112,6 +112,11 @@ jobs:
       - name: Smoke test the image
         run: ./deploy/smoke.sh pdf-renderer:smoke
 
+      # Builds a CJK-less variant and proves a mounted font is actually embedded
+      # in the output, rather than merely that the request succeeded.
+      - name: Smoke test runtime font mounting
+        run: ./deploy/smoke-fonts.sh pdf-renderer:smoke
+
       # Multi-arch push. The runtime stage's font install runs under QEMU for
       # the non-native arch; expect this step to be slow.
       - name: Build and push

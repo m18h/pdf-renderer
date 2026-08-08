@@ -59,6 +59,12 @@ RUN groupadd --system --gid 10001 render \
  && useradd --system --uid 10001 --gid 10001 \
       --create-home --home-dir /home/render --shell /usr/sbin/nologin render
 
+# Mount point for extra fonts supplied at runtime (brand or licensed faces that
+# should not be baked into the image). fontconfig already scans this path per
+# /etc/fonts/fonts.conf, so a plain bind mount needs no further configuration;
+# the service runs fc-cache over it at startup.
+RUN mkdir -p /usr/local/share/fonts
+
 COPY --from=builder /out/pdf-renderer /usr/local/bin/pdf-renderer
 
 # PORT is 8080, not 80: a non-root UID cannot bind a privileged port.
@@ -66,6 +72,7 @@ ENV GIN_MODE=release \
     PORT=8080 \
     PDFRENDER_EXEC_PATH=/headless-shell/headless-shell \
     PDFRENDER_LOG_FORMAT=json \
+    PDFRENDER_FONTS_DIR=/usr/local/share/fonts \
     HOME=/home/render \
     XDG_CONFIG_HOME=/home/render/.config \
     XDG_CACHE_HOME=/home/render/.cache
