@@ -4,7 +4,7 @@
 # build — runs natively and cross-compiles via GOOS/GOARCH, so the Go build
 # never goes through QEMU on a multi-arch build.
 ##############################################################################
-FROM --platform=$BUILDPLATFORM golang:1.26.5-alpine3.24 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.27rc2-alpine3.24 AS builder
 
 ENV CGO_ENABLED=0
 WORKDIR /src
