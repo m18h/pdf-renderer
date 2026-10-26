@@ -31,7 +31,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # with just five runtime libs. The Chrome team recommends this binary (rather
 # than full Chrome in new-headless mode) for exactly this workload: it needs no
 # X11, no Wayland and no D-Bus.
-FROM chromedp/headless-shell:151.0.7922.109 AS runtime
+FROM chromedp/headless-shell:157.0.8103.6 AS runtime
 
 LABEL org.opencontainers.image.title="pdf-renderer" \
       org.opencontainers.image.description="HTML to PDF micro-service (headless Chromium)" \
