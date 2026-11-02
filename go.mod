@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/chromedp/cdproto v0.158.6
-	github.com/chromedp/chromedp v0.16.0
+	github.com/chromedp/chromedp v0.21.0
 	github.com/gin-gonic/gin v1.12.0
 	rsc.io/pdf v0.1.1
 )
@@ -20,9 +20,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.30.1 // indirect
-	github.com/gobwas/httphead v0.1.0 // indirect
-	github.com/gobwas/pool v0.2.1 // indirect
-	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
