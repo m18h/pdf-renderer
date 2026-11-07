@@ -3,7 +3,7 @@ module github.com/m18h/pdf-renderer
 go 1.26.0
 
 require (
-	github.com/chromedp/cdproto v0.158.6
+	github.com/chromedp/cdproto v0.159.1
 	github.com/chromedp/chromedp v0.16.0
 	github.com/gin-gonic/gin v1.12.0
 	rsc.io/pdf v0.1.1
